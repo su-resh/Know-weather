@@ -21,6 +21,14 @@ class WeatherScreen extends StatelessWidget {
              onPressed: (){},
            ),
           ]),
+          body: const Column(
+            // main card
+           children: [
+            Placeholder(fallbackHeight: 250,
+            child: Text("Main Card"),
+            ),
+           ],
+          )
     );
   }
 }
