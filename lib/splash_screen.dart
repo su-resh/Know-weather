@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-
+// Reduce this value, I am keeping 10 for testing purpose
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const WeatherScreen()),
@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
               color: Colors.white,
             ),
             Text(
-              "Weather App",
+              "Know Weather",
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

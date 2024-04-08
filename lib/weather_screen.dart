@@ -1,20 +1,58 @@
+import 'dart:convert';
 import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:weather_app/additional_info_item.dart';
+import 'package:weather_app/hourly_forecast_item.dart';
+import 'package:http/http.dart' as http;
+import 'package:weather_app/secrets.dart';
 
-class WeatherScreen extends StatelessWidget {
+double temp = 0.0; 
+
+class WeatherScreen extends StatefulWidget {
+  
   const WeatherScreen({super.key});
+
+  
+  @override
+  State<WeatherScreen> createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCurrentWeather();
+  }
+
+  Future getCurrentWeather() async {
+    try{
+    final res = await http.get( 
+      Uri.parse('https://api.openweathermap.org/data/2.5/forecast?q=Pokhara,nepal&APPID,nepal&APPID=$openWeatherAPIKEY')
+    );
+    final data = jsonDecode(res.body);
+
+    if(data['cod'] != '200'){
+      throw 'An unexpected error occured';
+    }
+    setState(()  {temp = data['list'] [0] ['main'] ['temp'];});
+      
+      }
+    
+    catch(e){
+      throw e.toString();
+    }
+  
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+     
         appBar: AppBar(
             title: const Text(
-              'Weather App',
+              'Weather Forecast',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -26,7 +64,9 @@ class WeatherScreen extends StatelessWidget {
                 onPressed: () {},
               ),
             ]),
-        body: Padding(
+        body: temp == 0 ? const 
+        CircularProgressIndicator():
+        Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,24 +83,25 @@ class WeatherScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "300°F",
+                              "$temp K",
                               style: TextStyle(
                                   fontSize: 32, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(
-                              height: 10,
+                              height: 8,
                             ),
                             Icon(
                               Icons.cloud,
                               size: 50,
                             ),
                             const SizedBox(
-                              height: 10,
+                              height: 8,
                             ),
                             Text(
                               "Rain",
@@ -76,7 +117,7 @@ class WeatherScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 10,
               ),
               // Weather forecast cards
               const Text(
@@ -90,71 +131,72 @@ class WeatherScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    SizedBox(
-                      child: HourlyForecastItem()
+                    HourlyForecastItem(
+                        time: '00:00',
+                        icon: Icons.cloud,
+                        tempreature: '300.12',
                       ),
-                      HourlyForecastItem(),
-                      HourlyForecastItem(),
-                       HourlyForecastItem(), 
-                      HourlyForecastItem(),
-                      HourlyForecastItem(),
+                    HourlyForecastItem(
+                        time: '03:00',
+                        icon: Icons.sunny,
+                        tempreature: '300.12',
+                      ),
+                    HourlyForecastItem(
+                        time: '02:00',
+                        icon: Icons.cloud,
+                        tempreature: '300.12',
+                      ),
+                    HourlyForecastItem(
+                        time: '03:00',
+                        icon: Icons.sunny,
+                        tempreature: '300.52',
+                      ),
+                    HourlyForecastItem(
+                        time: '04:00',
+                        icon: Icons.sunny,
+                        tempreature: '300.42',
+                      ),
+                      
                   ],
                 ),
               ),
               const SizedBox(
                 height: 20,
               ),
-              Placeholder(
-                fallbackHeight: 150,
+              //additional infromation  
+                const Text(
+                "Additional Information",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  AdditionalInfoItem(
+                    icon: Icons.water_drop,
+                    label: "Humidity",
+                    value: "80",
+                  ),
+                  AdditionalInfoItem(
+                    icon: Icons.air,
+                    label: "Wind Speed",
+                    value: "5",
+                  ),
+                  AdditionalInfoItem(
+                    icon: Icons.beach_access,
+                    label:  "Pressure",
+                    value: '1000',
+                  ),
+                ],
+              )
             ],
           ),
         ));
   }
 }
 
-
-class HourlyForecastItem extends StatelessWidget {
-  const HourlyForecastItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-                        elevation: 6,
-                        child: Container(
-                          width: 100,
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "03:00",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Icon(
-                                Icons.cloud,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                "320.12",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-  }
-}
