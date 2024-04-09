@@ -46,6 +46,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +91,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "$temp K",
+                          "${(temp - 273.15).toStringAsFixed(2)} °C", 
                               style: TextStyle(
                                   fontSize: 32, fontWeight: FontWeight.bold),
                             ),
