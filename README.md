@@ -1,4 +1,3 @@
-# Know Weather
 # WeatherForecastApp
 
 ## Overview
